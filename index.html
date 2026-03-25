@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RED SCRIPT — Si tu peux l'écrire, ça peut exister.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#ff2200;--red-dim:#cc1a00;--red-dark:#330a00;--red-glow:rgba(255,34,0,0.15);
+  --bg:#07070f;--bg2:#0d0d1a;--bg3:#111122;
+  --text:#ccbbbb;--text-dim:#664444;--text-muted:#332222;
+  --border:rgba(255,34,0,0.15);--border-bright:rgba(255,34,0,0.4);
+  --mono:'IBM Plex Mono',monospace;--display:'Bebas Neue',sans-serif;--terminal:'Share Tech Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;line-height:1.7;overflow-x:hidden;cursor:none;}
+#cursor{position:fixed;width:12px;height:12px;border:1px solid var(--red);pointer-events:none;z-index:9999;transition:transform 0.1s ease;transform:translate(-50%,-50%);}
+#cursor-dot{position:fixed;width:3px;height:3px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cursor.hover{transform:translate(-50%,-50%) scale(2);}
+body::after{content:'';position:fixed;top:-100%;left:0;right:0;height:2px;background:rgba(255,34,0,0.06);animation:scanline 8s linear infinite;pointer-events:none;z-index:9997;}
+@keyframes scanline{to{top:200%;}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 60px;border-bottom:1px solid var(--border);background:rgba(7,7,15,0.9);backdrop-filter:blur(12px);}
+.nav-logo{font-family:var(--display);font-size:28px;letter-spacing:6px;color:var(--red);}
+.nav-links{display:flex;gap:40px;}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:11px;letter-spacing:3px;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--red);}
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:120px 60px 60px;}
+#hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,34,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,34,0,0.03) 1px,transparent 1px);background-size:60px 60px;animation:gridmove 20s linear infinite;}
+@keyframes gridmove{0%{background-position:0 0;}100%{background-position:60px 60px;}}
+#hero::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(255,34,0,0.06) 0%,transparent 70%);pointer-events:none;animation:pulse-glow 4s ease-in-out infinite;}
+@keyframes pulse-glow{0%,100%{opacity:0.6;}50%{opacity:1;}}
+.hero-eyebrow{font-size:10px;letter-spacing:5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:24px;position:relative;animation:fadeup 1s ease both 0.2s;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'—';margin:0 12px;color:var(--red-dim);}
+.hero-title{font-family:var(--display);font-size:clamp(80px,15vw,180px);letter-spacing:20px;color:var(--red);line-height:0.9;text-align:center;position:relative;animation:fadeup 1s ease both 0.4s;text-shadow:0 0 60px rgba(255,34,0,0.3);}
+.hero-title .glitch-layer{position:absolute;top:0;left:0;right:0;color:#ff6644;opacity:0;animation:glitch-title 6s ease infinite 2s;}
+@keyframes glitch-title{0%,95%,100%{opacity:0;transform:none;}96%{opacity:0.15;transform:translate(4px,0);clip-path:inset(20% 0 60% 0);}97%{opacity:0.1;transform:translate(-3px,0);clip-path:inset(60% 0 10% 0);}98%{opacity:0;}}
+.hero-sub{font-size:13px;letter-spacing:4px;color:var(--text-dim);text-align:center;margin-top:28px;font-style:italic;animation:fadeup 1s ease both 0.6s;}
+.hero-tags{display:flex;gap:12px;margin-top:40px;animation:fadeup 1s ease both 0.8s;flex-wrap:wrap;justify-content:center;}
+.tag{border:1px solid var(--border);padding:6px 16px;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
+.hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:3px;color:var(--text-muted);animation:bounce 2s ease-in-out infinite;text-transform:uppercase;}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+.corner{position:absolute;width:24px;height:24px;}
+.corner-tl{top:120px;left:60px;border-top:1px solid var(--border-bright);border-left:1px solid var(--border-bright);}
+.corner-tr{top:120px;right:60px;border-top:1px solid var(--border-bright);border-right:1px solid var(--border-bright);}
+.corner-bl{bottom:60px;left:60px;border-bottom:1px solid var(--border-bright);border-left:1px solid var(--border-bright);}
+.corner-br{bottom:60px;right:60px;border-bottom:1px solid var(--border-bright);border-right:1px solid var(--border-bright);}
+section{padding:100px 60px;max-width:1200px;margin:0 auto;position:relative;}
+.section-label{font-size:10px;letter-spacing:5px;color:var(--red-dim);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:16px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{font-family:var(--display);font-size:clamp(36px,5vw,64px);letter-spacing:8px;color:var(--text);line-height:1;margin-bottom:60px;}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.story-card{background:var(--bg2);border:1px solid var(--border);padding:40px;position:relative;overflow:hidden;transition:border-color 0.3s;}
+.story-card:hover{border-color:var(--border-bright);}
+.story-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:var(--red);transition:height 0.4s ease;}
+.story-card:hover::before{height:100%;}
+.story-card-num{font-size:10px;letter-spacing:3px;color:var(--text-muted);margin-bottom:16px;}
+.story-card-title{font-family:var(--display);font-size:28px;letter-spacing:4px;color:var(--red);margin-bottom:16px;}
+.story-card p{color:var(--text-dim);font-size:13px;line-height:1.8;}
+.terminal-box{background:var(--bg2);border:1px solid var(--border);padding:40px;margin:60px 0;position:relative;font-family:var(--terminal);}
+.terminal-box::before{content:'> FRAGMENT RÉCUPÉRÉ';position:absolute;top:-1px;left:20px;background:var(--bg2);padding:0 12px;font-size:10px;letter-spacing:3px;color:var(--red-dim);transform:translateY(-50%);}
+.terminal-box p{color:var(--text-dim);font-size:13px;line-height:2;}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--red);margin-left:4px;animation:blink 1.2s step-end infinite;vertical-align:middle;opacity:0.8;}
+@keyframes blink{0%,100%{opacity:0.8;}50%{opacity:0;}}
+.abilities-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.ability-card{background:var(--bg2);border:1px solid var(--border);padding:32px 24px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden;}
+.ability-card:hover{background:var(--bg3);border-color:var(--border-bright);transform:translateY(-4px);}
+.ability-icon{font-size:32px;margin-bottom:16px;display:block;}
+.ability-name{font-family:var(--display);font-size:20px;letter-spacing:3px;color:var(--red);margin-bottom:8px;}
+.ability-desc{font-size:11px;color:var(--text-dim);line-height:1.6;}
+.ability-zone{font-size:9px;letter-spacing:2px;color:var(--text-muted);margin-top:12px;text-transform:uppercase;}
+.endings-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;}
+.ending-card{background:var(--bg2);border:1px solid var(--border);padding:28px 20px;text-align:center;transition:all 0.3s;}
+.ending-card:hover{border-color:var(--border-bright);}
+.ending-dot{width:10px;height:10px;border-radius:50%;margin:0 auto 16px;}
+.ending-name{font-family:var(--display);font-size:18px;letter-spacing:3px;margin-bottom:10px;}
+.ending-desc{font-size:11px;color:var(--text-dim);line-height:1.6;}
+.ending-trigger{font-size:10px;color:var(--text-muted);margin-top:10px;font-style:italic;}
+.devlog-timeline{position:relative;padding-left:40px;}
+.devlog-timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--red),transparent);}
+.devlog-item{position:relative;margin-bottom:60px;opacity:0;transform:translateX(-20px);transition:all 0.6s ease;}
+.devlog-item.visible{opacity:1;transform:translateX(0);}
+.devlog-item::before{content:'';position:absolute;left:-44px;top:6px;width:8px;height:8px;border:1px solid var(--red);background:var(--bg);transform:rotate(45deg);}
+.devlog-step{font-size:10px;letter-spacing:3px;color:var(--red-dim);text-transform:uppercase;margin-bottom:8px;}
+.devlog-title{font-family:var(--display);font-size:28px;letter-spacing:4px;color:var(--text);margin-bottom:12px;}
+.devlog-text{color:var(--text-dim);font-size:13px;line-height:1.9;max-width:700px;}
+.devlog-tech{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.tech-badge{border:1px solid var(--border);padding:4px 12px;font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;}
+#download{max-width:1200px;margin:0 auto;padding:100px 60px;}
+.download-box{background:var(--bg2);border:1px solid var(--border-bright);padding:80px 60px;text-align:center;position:relative;overflow:hidden;}
+.download-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(255,34,0,0.06) 0%,transparent 70%);}
+.download-title{font-family:var(--display);font-size:clamp(48px,8vw,96px);letter-spacing:16px;color:var(--red);margin-bottom:16px;text-shadow:0 0 40px rgba(255,34,0,0.3);position:relative;}
+.download-sub{font-size:12px;letter-spacing:4px;color:var(--text-dim);margin-bottom:48px;position:relative;}
+.download-btn{display:inline-flex;align-items:center;gap:16px;background:var(--red);color:#fff;text-decoration:none;padding:18px 48px;font-family:var(--mono);font-size:13px;letter-spacing:4px;text-transform:uppercase;transition:all 0.3s;position:relative;overflow:hidden;}
+.download-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:rgba(255,255,255,0.1);transition:left 0.3s;}
+.download-btn:hover::before{left:100%;}
+.download-btn:hover{background:#ff3311;transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,34,0,0.4);}
+.download-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;}
+.download-info{margin-top:24px;font-size:10px;letter-spacing:2px;color:var(--text-muted);position:relative;}
+.download-info span{margin:0 16px;color:var(--text-dim);}
+footer{border-top:1px solid var(--border);padding:40px 60px;display:flex;justify-content:space-between;align-items:center;}
+.footer-logo{font-family:var(--display);font-size:20px;letter-spacing:6px;color:var(--text-muted);}
+.footer-text{font-size:10px;letter-spacing:2px;color:var(--text-muted);font-style:italic;}
+@keyframes fadeup{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;transform:translateY(40px);transition:all 0.8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.sep{height:1px;background:linear-gradient(to right,transparent,var(--border),transparent);max-width:1200px;margin:0 auto;}
+@media(max-width:900px){nav{padding:16px 24px;}section{padding:60px 24px;}.story-grid,.abilities-grid{grid-template-columns:1fr 1fr!important;}.endings-grid{grid-template-columns:1fr 1fr!important;}.download-box{padding:48px 24px;}footer{flex-direction:column;gap:16px;text-align:center;}}
+@media(max-width:600px){.story-grid,.abilities-grid,.endings-grid{grid-template-columns:1fr!important;}.nav-links{display:none;}}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<nav>
+  <div class="nav-logo">RED SCRIPT</div>
+  <div class="nav-links">
+    <a href="#story">Histoire</a>
+    <a href="#abilities">Capacités</a>
+    <a href="#endings">Fins</a>
+    <a href="#devlog">Développement</a>
+    <a href="#download">Télécharger</a>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="hero-eyebrow">Un jeu de plateforme narratif</div>
+  <div class="hero-title">RED SCRIPT<div class="glitch-layer">RED SCRIPT</div></div>
+  <div class="hero-sub">"Si tu peux l'écrire… alors ça peut exister."</div>
+  <div class="hero-tags">
+    <span class="tag">Metroidvania</span>
+    <span class="tag">Narratif</span>
+    <span class="tag">Godot 4.5</span>
+    <span class="tag">Solo & Coop</span>
+    <span class="tag">5 Fins</span>
+  </div>
+  <div class="hero-scroll">↓ &nbsp; Défiler</div>
+</section>
+
+<div class="sep"></div>
+
+<section id="story">
+  <div class="section-label">01 &nbsp; Histoire</div>
+  <div class="section-title reveal">L'ARCHIVE</div>
+  <div class="story-grid reveal">
+    <div class="story-card">
+      <div class="story-card-num">001 / LE MONDE</div>
+      <div class="story-card-title">L'ARCHIVE</div>
+      <p>Un lieu construit pour écrire la réalité. Les Architectes ont découvert que le monde n'est pas fait de matière — il est fait de définitions. Ils ont appris à les modifier. Puis tout s'est arrêté.</p>
+    </div>
+    <div class="story-card">
+      <div class="story-card-num">002 / LE PERSONNAGE</div>
+      <div class="story-card-title">LA SILHOUETTE</div>
+      <p>Tu n'as pas de nom. Tu es apparu parce que quelqu'un a commencé une phrase et ne l'a jamais terminée. Tu es instable. Tu glitches. Tu deviens rouge. Tu es un brouillon.</p>
+    </div>
+    <div class="story-card">
+      <div class="story-card-num">003 / LE BUT</div>
+      <div class="story-card-title">LE TERMINAL</div>
+      <p>Au fond de l'Archive existe le Script Terminal. Il attend une phrase. C'est toi qui l'écriras. Ce que tu écris détermine la fin du monde.</p>
+    </div>
+    <div class="story-card">
+      <div class="story-card-num">004 / LES FRAGMENTS</div>
+      <div class="story-card-title">PHRASES PERDUES</div>
+      <p>18 phrases inachevées disséminées dans l'Archive. Des tentatives abandonnées. Certaines parce que l'auteur avait peur. Certaines parce qu'elles l'en ont empêché.</p>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<section id="abilities">
+  <div class="section-label">02 &nbsp; Gameplay</div>
+  <div class="section-title reveal">CAPACITÉS</div>
+  <div class="abilities-grid reveal">
+    <div class="ability-card">
+      <span class="ability-icon">⚡</span>
+      <div class="ability-name">DASH</div>
+      <div class="ability-desc">Propulsion latérale à grande vitesse. Laisse une traînée de fantômes rouges. Traverse des espaces impossibles.</div>
+      <div class="ability-zone">Zone 0 → débloque Zone 1</div>
+    </div>
+    <div class="ability-card">
+      <span class="ability-icon">🧲</span>
+      <div class="ability-name">WALL JUMP</div>
+      <div class="ability-desc">Adhérence murale. Grimper des puits verticaux. S'enchaîner entre deux parois infiniment.</div>
+      <div class="ability-zone">Zone 1 → débloque Zone 2</div>
+    </div>
+    <div class="ability-card">
+      <span class="ability-icon">🌀</span>
+      <div class="ability-name">DOUBLE SAUT</div>
+      <div class="ability-desc">Impulsion secondaire améliorée. Atteindre des plateformes hors de portée.</div>
+      <div class="ability-zone">Zone 2 → débloque Zone 3</div>
+    </div>
+    <div class="ability-card">
+      <span class="ability-icon">🔗</span>
+      <div class="ability-name">GRAPPIN</div>
+      <div class="ability-desc">Ancrage scriptural. Se balancer sur des points d'ancrage. Physique de pendule réelle.</div>
+      <div class="ability-zone">Zone 3 → débloque Zone 4</div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<section id="endings">
+  <div class="section-label">03 &nbsp; Fins</div>
+  <div class="section-title reveal">TERMINE LA PHRASE</div>
+  <p class="reveal" style="color:var(--text-dim);font-size:13px;margin-bottom:48px;max-width:600px;line-height:1.9;">
+    Le jeu se termine par un terminal. Tu écris une phrase libre. Le jeu analyse ton texte et choisit une fin parmi cinq — selon le ton, les mots, ou ton silence.
+  </p>
+  <div class="endings-grid reveal">
+    <div class="ending-card">
+      <div class="ending-dot" style="background:#22cc66;"></div>
+      <div class="ending-name" style="color:#22cc66;">RÉÉCRITURE</div>
+      <div class="ending-desc">Le monde se stabilise. La Silhouette disparaît — terminée, pas effacée.</div>
+      <div class="ending-trigger">Mots positifs</div>
+    </div>
+    <div class="ending-card">
+      <div class="ending-dot" style="background:#cc2222;"></div>
+      <div class="ending-name" style="color:#cc2222;">EFFACEMENT</div>
+      <div class="ending-desc">L'Archive se désintègre. Tout s'efface progressivement.</div>
+      <div class="ending-trigger">Mots négatifs</div>
+    </div>
+    <div class="ending-card">
+      <div class="ending-dot" style="background:#ccaa22;"></div>
+      <div class="ending-name" style="color:#ccaa22;">STAGNATION</div>
+      <div class="ending-desc">Rien ne change. Le curseur recommence à clignoter.</div>
+      <div class="ending-trigger">Mots ambigus</div>
+    </div>
+    <div class="ending-card">
+      <div class="ending-dot" style="background:#8822cc;"></div>
+      <div class="ending-name" style="color:#8822cc;">CORRUPTION</div>
+      <div class="ending-desc">L'Archive glitche. La réalité se fragmente.</div>
+      <div class="ending-trigger">Texte sans sens</div>
+    </div>
+    <div class="ending-card">
+      <div class="ending-dot" style="background:#444444;"></div>
+      <div class="ending-name" style="color:#888888;">ABANDON</div>
+      <div class="ending-desc">Tu n'écris rien. "Au revoir." Le jeu se ferme.</div>
+      <div class="ending-trigger">Silence total</div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<section id="devlog">
+  <div class="section-label">04 &nbsp; Développement</div>
+  <div class="section-title reveal">COMMENT C'EST FAIT</div>
+  <div class="devlog-timeline">
+    <div class="devlog-item">
+      <div class="devlog-step">Étape 01</div>
+      <div class="devlog-title">IDÉE DE DÉPART</div>
+      <div class="devlog-text">Le projet a commencé comme un simple platformer avec un chrono — une course entre deux joueurs. Puis l'idée a évolué vers un metroidvania narratif où les capacités débloquent de nouvelles zones, inspiré de Hollow Knight.</div>
+      <div class="devlog-tech"><span class="tech-badge">Concept</span><span class="tech-badge">Metroidvania</span><span class="tech-badge">Platformer</span></div>
+    </div>
+    <div class="devlog-item">
+      <div class="devlog-step">Étape 02</div>
+      <div class="devlog-title">L'IDENTITÉ RED SCRIPT</div>
+      <div class="devlog-text">L'univers a tout changé. Un monde où la réalité est faite de définitions écrites. Un personnage sans nom — un brouillon d'une phrase inachevée. Des fragments narratifs à collecter. Et une fin ouverte où le joueur écrit lui-même la conclusion du monde.</div>
+      <div class="devlog-tech"><span class="tech-badge">Narration</span><span class="tech-badge">World Building</span><span class="tech-badge">Game Design</span></div>
+    </div>
+    <div class="devlog-item">
+      <div class="devlog-step">Étape 03</div>
+      <div class="devlog-title">GODOT 4.5</div>
+      <div class="devlog-text">Tout le jeu est développé avec Godot 4.5 sur Windows. Le moteur de mouvement inclut coyote time, jump buffer, double saut, dash avec traînée de fantômes, wall jump et grappin avec physique de pendule réelle. GDScript avec typage strict partout.</div>
+      <div class="devlog-tech"><span class="tech-badge">Godot 4.5</span><span class="tech-badge">GDScript</span><span class="tech-badge">Windows</span><span class="tech-badge">Pixel Art 32x32</span></div>
+    </div>
+    <div class="devlog-item">
+      <div class="devlog-step">Étape 04</div>
+      <div class="devlog-title">LE SYSTÈME DE FRAGMENTS</div>
+      <div class="devlog-text">18 phrases inachevées dans 5 zones. Chaque fragment est un Area2D avec texte, animation de flottaison, PointLight2D et effet de collecte. Le HUD gèle le jeu et affiche le texte avec fondu. L'obscurité est gérée par CanvasModulate — les lumières percent le noir.</div>
+      <div class="devlog-tech"><span class="tech-badge">Area2D</span><span class="tech-badge">PointLight2D</span><span class="tech-badge">CanvasModulate</span></div>
+    </div>
+    <div class="devlog-item">
+      <div class="devlog-step">Étape 05</div>
+      <div class="devlog-title">LE SCRIPT TERMINAL</div>
+      <div class="devlog-text">La fin du jeu — une scène minimaliste avec un LineEdit où le joueur tape librement. L'algorithme analyse le ton et les mots clés pour choisir parmi 5 fins. L'effet machine à écrire lettre par lettre crée une atmosphère de terminal authentique.</div>
+      <div class="devlog-tech"><span class="tech-badge">LineEdit</span><span class="tech-badge">Analyse mots clés</span><span class="tech-badge">5 Fins</span></div>
+    </div>
+    <div class="devlog-item">
+      <div class="devlog-step">Étape 06</div>
+      <div class="devlog-title">L'EFFET DE GLITCH</div>
+      <div class="devlog-text">Toutes les 8 secondes, la Silhouette Rouge subit un glitch — elle tremble, devient rouge, puis 2 secondes après un message s'affiche : "Tu viens de devenir rouge. Ce n'est pas un bug. C'est ce que tu es." Un rappel constant que le personnage est incomplet.</div>
+      <div class="devlog-tech"><span class="tech-badge">Tween</span><span class="tech-badge">AnimatedSprite2D</span><span class="tech-badge">Narration visuelle</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<section id="download">
+  <div class="download-box">
+    <div class="download-title">JOUER</div>
+    <div class="download-sub">Windows 64-bit — Gratuit — Godot 4.5</div>
+    <!--
+      INSTRUCTIONS :
+      1. Place ton fichier ZIP dans le même dossier que ce index.html
+      2. Renomme-le exactement "RED_SCRIPT.zip"
+      3. Le bouton téléchargera automatiquement ce fichier
+    -->
+    <a href="RED_SCRIPT.zip" download="RED_SCRIPT.zip" class="download-btn">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      En cours de création
+    </a>
+    <div class="download-info">
+      <span>RED_SCRIPT.zip</span>
+      <span>Windows 64-bit</span>
+      <span>Godot 4.5</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">RED SCRIPT</div>
+  <div class="footer-text">"Si tu peux l'écrire… alors ça peut exister."</div>
+</footer>
+
+<script>
+const cursor = document.getElementById('cursor');
+const dot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+  dot.style.left    = e.clientX + 'px';
+  dot.style.top     = e.clientY + 'px';
+});
+document.querySelectorAll('a,button,.story-card,.ability-card,.ending-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal,.devlog-item').forEach(el => observer.observe(el));
+
+document.querySelector('.hero-title').addEventListener('click', function() {
+  this.style.transform = `translate(${(Math.random()-0.5)*8}px,${(Math.random()-0.5)*4}px)`;
+  this.style.color = '#ff6644';
+  setTimeout(() => { this.style.transform=''; this.style.color='var(--red)'; }, 100);
+});
+
+const phrases = [
+  `<span style="color:var(--text-muted)">Fragment_018 —</span><span style="color:var(--text-dim)"> Nous t'avons créé pour finir ce que nous n'avons pas pu. Va au terminal. Termine la phrase.</span>`,
+  `<span style="color:var(--text-muted)">Fragment_013 —</span><span style="color:var(--text-dim)"> Si une conscience termine la phrase, alors la phrase était en attente de cette conscience depuis le début.</span>`,
+  `<span style="color:var(--text-muted)">Fragment_002 —</span><span style="color:var(--text-dim)"> Ne jamais écrire "il revient", sinon il revient. C'est trop tard.</span>`,
+  `<span style="color:var(--text-muted)">Fragment_017 —</span><span style="color:var(--text-dim)"> Tu lis ceci. Donc tu existes assez pour lire. Donc tu existes assez pour décider.</span>`,
+];
+let idx = 0;
+const termEl = document.getElementById('terminal-text');
+setInterval(() => {
+  idx = (idx + 1) % phrases.length;
+  termEl.style.opacity = '0';
+  setTimeout(() => {
+    termEl.innerHTML = phrases[idx] + '<span class="cursor"></span>';
+    termEl.style.opacity = '1';
+    termEl.style.transition = 'opacity 0.5s';
+  }, 300);
+}, 5000);
+
+document.querySelectorAll('.devlog-item').forEach((item, i) => {
+  item.style.transitionDelay = (i * 0.1) + 's';
+});
+</script>
+</body>
+</html>
